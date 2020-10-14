@@ -234,7 +234,7 @@
     (output_Energy system)))         ;; Output final energy of the system
 
 (defun main (&optional n-supplied)
- (let* ((args sb-ext:*posix-argv*)
-        (n (or n-supplied (parse-integer (or (second args) "50000000")))))
-   (nbody n)))
+  (let ((n (or n-supplied (parse-integer
+			   (or (second sb-ext:*posix-argv*) "50000000")))))
+    (nbody n)))
 
