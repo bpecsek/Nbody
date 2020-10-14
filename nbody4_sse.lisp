@@ -24,8 +24,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SSE inicialisation                                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(declaim (optimize speed (safety 0) (space 0) (debug 0)))
+(declaim (optimize (speed 3) (safety 0) (space 0) (debug 0)))
 (load "sse-pack.lisp")
+
 (in-package :cl-user)
 
 (defconstant +DAYS-PER-YEAR+ 365.24d0)
@@ -130,7 +131,7 @@
            (force-magnitudes ()
 	     ;; Calculate the magnitudes of force between the bodies for each
 	     ;; interaction. This loop processes two interactions at a time
-	     ;; which is why ROUNDED_INTERACTIONS_COUNT/2 iterations are done.
+	     ;; using SSE instructions. 
              (loop for i of-type fixnum below +ROUNDED_INTERACTIONS_COUNT+ by 2
               do (let* ((%pdx (d2ref position_Deltas-x i))
                         (%pdy (d2ref position_Deltas-y i))
@@ -233,7 +234,7 @@
     (output_Energy system)))         ;; Output final energy of the system
 
 (defun main (&optional n-supplied)
- (let* ((args sb-ext:*posix-argv*)
-        (n (or n-supplied (parse-integer (or (second args) "50000000")))))
+  (let ((n (or n-supplied (parse-integer
+			   (or (second sb-ext:*posix-argv*) "50000000")))))
    (nbody n)))
 
